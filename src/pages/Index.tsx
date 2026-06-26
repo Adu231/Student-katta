@@ -8,14 +8,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import PublicNavbar from '@/components/layout/PublicNavbar';
 import PublicFooter from '@/components/layout/PublicFooter';
-import NoteCard from '@/components/features/NoteCard';
-import AnnouncementCard from '@/components/features/AnnouncementCard';
-import { MOCK_NOTES, MOCK_ANNOUNCEMENTS, PLATFORM_STATS } from '@/lib/mockData';
+import { PLATFORM_STATS } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { getCurrentUser, getDashboardPath } from '@/lib/auth';
-
-const approvedNotes = MOCK_NOTES.filter(n => n.status === 'approved').slice(0, 4);
-const recentAnnouncements = MOCK_ANNOUNCEMENTS.slice(0, 3);
 
 const features = [
   { slug: 'content-upload',         icon: Upload,       title: 'Easy Content Upload',        desc: 'Upload notes, assignments, question papers & study materials with ease.',                              color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' },
@@ -45,7 +40,6 @@ const steps = [
 const roles = [
   { role: 'Student', accent: 'border-t-blue-500', badge: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300', icon: GraduationCap, features: ['Upload Notes & Assignments', 'Browse & Download Resources', 'Bookmark Favourites', 'Track Approval Status', 'Rate & Review Content'] },
   { role: 'Teacher', accent: 'border-t-emerald-500', badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300', icon: CheckCircle, features: ['Upload Official Content', 'Review Student Uploads', 'Approve or Reject Content', 'Publish Announcements', 'View Analytics'] },
-  { role: 'Admin',   accent: 'border-t-orange-500',  badge: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',  icon: Shield,      features: ['Manage All Users', 'Verify Teachers', 'Approve All Content', 'Manage Departments', 'Platform Governance'] },
 ];
 
 // Animated counter
@@ -80,6 +74,21 @@ export default function Index() {
   const [heroVisible, setHeroVisible] = useState(false);
   const user = getCurrentUser();
 
+  const words = ['Grow Together', 'Build Together', 'Share Together', 'Excel Together'];
+  const [wordIndex, setWordIndex] = useState(0);
+  const [wordVisible, setWordVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordVisible(false);
+      setTimeout(() => {
+        setWordIndex((prev) => (prev + 1) % words.length);
+        setWordVisible(true);
+      }, 350);
+    }, 2600);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => setHeroVisible(true), 50);
     return () => clearTimeout(t);
@@ -90,7 +99,7 @@ export default function Index() {
       <PublicNavbar />
 
       {/* ── Hero ─────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-blue-700 to-blue-900 text-white min-h-[520px] flex items-center">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-950 text-white min-h-[520px] flex items-center">
         {/* Animated orbs */}
         <div className="absolute top-8 left-8 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-hero-blob" />
         <div className="absolute bottom-8 right-12 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-hero-blob" style={{ animationDelay: '-4s' }} />
@@ -101,67 +110,80 @@ export default function Index() {
           style={{ backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)', backgroundSize: '48px 48px' }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 w-full">
-          <div className="max-w-3xl">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 w-full flex flex-col items-center justify-center text-center">
+          <div className="max-w-4xl flex flex-col items-center">
             <div className={cn(
               'inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-6 transition-all duration-700',
               heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             )}>
-              <Zap className="w-3.5 h-3.5 text-yellow-300" />
+              <Zap className="w-3.5 h-3.5 text-yellow-300 animate-pulse" />
               Academic Resource Management Platform
             </div>
 
             <h1 className={cn(
-              'text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 transition-all duration-700 delay-100',
+              'text-4xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 transition-all duration-700 delay-100 tracking-tight',
               heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             )}>
               Learn Together,<br />
-              <span className="text-yellow-300">Grow Together</span>
+              <span className={cn(
+                'text-yellow-300 inline-block transition-all duration-300 transform',
+                wordVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'
+              )}>
+                {words[wordIndex]}
+              </span>
             </h1>
 
             <p className={cn(
-              'text-lg lg:text-xl text-blue-100 mb-8 max-w-2xl leading-relaxed transition-all duration-700 delay-200',
+              'text-lg sm:text-xl lg:text-2xl text-blue-100 mb-8 max-w-3xl leading-relaxed transition-all duration-700 delay-200',
               heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             )}>
               StudentKatta is a centralized platform where students and teachers collaborate, share academic resources, and access quality-reviewed study materials through a structured approval system.
             </p>
 
             <div className={cn(
-              'flex flex-wrap gap-3 transition-all duration-700 delay-300',
+              'flex flex-wrap gap-3 justify-center transition-all duration-700 delay-300',
               heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             )}>
               {user ? (
                 <>
-                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group" asChild>
-                    <Link to={getDashboardPath(user.role)}>
-                      Go to Dashboard
-                      <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-                    </Link>
-                  </Button>
+                  <Link
+                    to={getDashboardPath(user.role)}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-semibold h-11 px-8 bg-white text-blue-700 hover:bg-blue-50 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 active:translate-y-0 group"
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  </Link>
                   {user.role === 'student' && (
-                    <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
-                      <Link to="/student/notes">Browse Notes</Link>
-                    </Button>
+                    <Link
+                      to="/student/notes"
+                      className="inline-flex items-center justify-center rounded-md text-sm font-semibold h-11 px-8 border border-white/40 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      Browse Notes
+                    </Link>
                   )}
                 </>
               ) : (
                 <>
-                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group" asChild>
-                    <Link to="/register">
-                      Get Started Free
-                      <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-                    </Link>
-                  </Button>
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
-                    <Link to="/login">Sign In</Link>
-                  </Button>
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-semibold h-11 px-8 bg-white text-blue-700 hover:bg-blue-50 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 active:translate-y-0 group"
+                  >
+                    Get Started Free
+                    <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-semibold h-11 px-8 border border-white/40 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm shadow-md transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                  >
+                    Sign In
+                  </Link>
                 </>
               )}
             </div>
 
             {/* Social proof */}
             <div className={cn(
-              'mt-10 flex flex-wrap items-center gap-6 transition-all duration-700 delay-400',
+              'mt-12 flex flex-wrap items-center justify-center gap-6 transition-all duration-700 delay-400',
               heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             )}>
               {[
@@ -307,64 +329,16 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ── Latest Notes ─────────────────────── */}
-      <section className="py-16 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8 animate-fade-in">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground">Latest Notes</h2>
-              <p className="text-muted-foreground mt-1">Recently approved academic resources</p>
-            </div>
-            <Button variant="outline" asChild className="group">
-              <Link
-                to={user ? (user.role === 'student' ? '/student/notes' : getDashboardPath(user.role)) : '/login?redirect=%2Fstudent%2Fnotes'}
-                className="flex items-center gap-2"
-              >
-                View All <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 stagger-children">
-            {approvedNotes.map((note, i) => (
-              <NoteCard key={note.id} note={note} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ── Announcements Preview ─────────────── */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8 animate-fade-in">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground">Latest Announcements</h2>
-              <p className="text-muted-foreground mt-1">Stay updated with institutional notices</p>
-            </div>
-            <Button variant="outline" asChild className="group">
-              <Link
-                to={user ? getDashboardPath(user.role) : '/login?redirect=%2Fstudent%2Fdashboard'}
-                className="flex items-center gap-2"
-              >
-                View All <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 stagger-children">
-            {recentAnnouncements.map((a, i) => (
-              <AnnouncementCard key={a.id} announcement={a} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── Roles ────────────────────────────── */}
       <section className="py-16 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in-up">
             <h2 className="text-3xl font-bold text-foreground mb-4">Built for Every Role</h2>
-            <p className="text-muted-foreground">Dedicated experiences for students, teachers, and administrators.</p>
+            <p className="text-muted-foreground">Dedicated experiences for students and teachers.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto stagger-children">
             {roles.map((r, i) => (
               <div key={r.role} className={`sk-card p-6 border-t-4 ${r.accent} hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group animate-fade-in-up`} style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="flex items-center gap-3 mb-5">
@@ -385,12 +359,18 @@ export default function Index() {
                   ))}
                 </ul>
                 <div className="mt-5 pt-4 border-t border-border">
-                  {r.role === 'Admin' ? (
-                    <Link to="/contact" className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200">
-                      Contact for Access <ArrowRight className="w-3.5 h-3.5" />
+                  {user ? (
+                    <Link
+                      to={r.role === 'Student' ? '/student/dashboard' : '/teacher/dashboard'}
+                      className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200"
+                    >
+                      Go to Dashboard <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   ) : (
-                    <Link to={`/register?role=${r.role.toLowerCase()}`} className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200">
+                    <Link
+                      to={`/register?role=${r.role.toLowerCase()}`}
+                      className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200"
+                    >
                       Get started <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   )}
@@ -401,25 +381,21 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ── CTA ──────────────────────────────── */}
-      <section className="py-16 relative overflow-hidden bg-gradient-to-br from-primary via-blue-700 to-blue-800 text-white">
-        <div className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }}
-        />
+      <section className="py-16 bg-muted/30 border-t border-b border-border">
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">Ready to Start Learning?</h2>
-          <p className="text-blue-100 text-lg mb-8">Join thousands of students and teachers already using StudentKatta.</p>
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">Ready to Start Learning?</h2>
+          <p className="text-muted-foreground text-lg mb-8">Join thousands of students and teachers already using StudentKatta.</p>
           <div className="flex flex-wrap justify-center gap-4">
             {user ? (
-              <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" asChild>
+              <Button size="lg" className="shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200" asChild>
                 <Link to={getDashboardPath(user.role)}>Go to Dashboard</Link>
               </Button>
             ) : (
-              <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" asChild>
+              <Button size="lg" className="shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200" asChild>
                 <Link to="/register">Create Free Account</Link>
               </Button>
             )}
-            <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
+            <Button size="lg" variant="outline" asChild>
               <Link to="/about">Learn More</Link>
             </Button>
           </div>

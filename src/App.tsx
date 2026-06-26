@@ -15,6 +15,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import FeatureDetail from "./pages/FeatureDetail";
+import AboutDetail from "./pages/AboutDetail";
 
 // Layouts
 import StudentLayout from "./components/layout/StudentLayout";
@@ -71,6 +72,7 @@ const App = () => (
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/features/:slug" element={<FeatureDetail />} />
+          <Route path="/about/:slug" element={<AboutDetail />} />
 
           {/* Student Routes */}
           <Route path="/student" element={<StudentLayout />}>

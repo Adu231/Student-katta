@@ -1,4 +1,5 @@
-import { GraduationCap, Target, Users, BookOpen, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { GraduationCap, Target, Users, BookOpen, Shield, ArrowRight } from 'lucide-react';
 import PublicNavbar from '@/components/layout/PublicNavbar';
 import PublicFooter from '@/components/layout/PublicFooter';
 
@@ -19,17 +20,27 @@ export default function About() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
           {[
-            { icon: Target, title: 'Our Mission', desc: 'To democratize access to quality academic resources by providing a structured, teacher-verified platform where students can share and access study materials seamlessly.' },
-            { icon: Users, title: 'Who We Serve', desc: 'StudentKatta is built for students seeking quality study materials, teachers managing academic content, and administrators overseeing institutional governance.' },
-            { icon: BookOpen, title: 'What We Offer', desc: 'From lecture notes to question papers, syllabus to assignments — our platform covers every academic need with an organized repository system.' },
-            { icon: Shield, title: 'Quality Assurance', desc: 'Every piece of content goes through a structured approval workflow ensuring only verified, accurate, and valuable academic resources reach students.' },
+            { slug: 'our-mission', icon: Target, title: 'Our Mission', desc: 'To democratize access to quality academic resources by providing a structured, teacher-verified platform where students can share and access study materials seamlessly.' },
+            { slug: 'who-we-serve', icon: Users, title: 'Who We Serve', desc: 'StudentKatta is built for students seeking quality study materials, teachers managing academic content, and administrators overseeing institutional governance.' },
+            { slug: 'what-we-offer', icon: BookOpen, title: 'What We Offer', desc: 'From lecture notes to question papers, syllabus to assignments — our platform covers every academic need with an organized repository system.' },
+            { slug: 'quality-assurance', icon: Shield, title: 'Quality Assurance', desc: 'Every piece of content goes through a structured approval workflow ensuring only verified, accurate, and valuable academic resources reach students.' },
           ].map(item => (
-            <div key={item.title} className="sk-card p-6">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                <item.icon className="w-6 h-6 text-primary" />
+            <div key={item.title} className="sk-card p-6 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <item.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
               </div>
-              <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              <div className="mt-5 pt-4 border-t border-border">
+                <Link
+                  to={`/about/${item.slug}`}
+                  className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200 w-fit"
+                >
+                  Read Full Blog <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
           ))}
         </div>
