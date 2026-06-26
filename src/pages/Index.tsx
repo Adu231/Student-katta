@@ -332,54 +332,56 @@ export default function Index() {
 
 
       {/* ── Roles ────────────────────────────── */}
-      <section className="py-16 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 animate-fade-in-up">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Built for Every Role</h2>
-            <p className="text-muted-foreground">Dedicated experiences for students and teachers.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto stagger-children">
-            {roles.map((r, i) => (
-              <div key={r.role} className={`sk-card p-6 border-t-4 ${r.accent} hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group animate-fade-in-up`} style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-                    <r.icon className="w-6 h-6 text-foreground" />
+      {!user && (
+        <section className="py-16 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12 animate-fade-in-up">
+              <h2 className="text-3xl font-bold text-foreground mb-4">Built for Every Role</h2>
+              <p className="text-muted-foreground">Dedicated experiences for students and teachers.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto stagger-children">
+              {roles.map((r, i) => (
+                <div key={r.role} className={`sk-card p-6 border-t-4 ${r.accent} hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group animate-fade-in-up`} style={{ animationDelay: `${i * 100}ms` }}>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                      <r.icon className="w-6 h-6 text-foreground" />
+                    </div>
+                    <div>
+                      <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${r.badge}`}>{r.role}</span>
+                      <h3 className="font-bold text-foreground mt-0.5">{r.role} Portal</h3>
+                    </div>
                   </div>
-                  <div>
-                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${r.badge}`}>{r.role}</span>
-                    <h3 className="font-bold text-foreground mt-0.5">{r.role} Portal</h3>
+                  <ul className="space-y-2.5">
+                    {r.features.map((f, fi) => (
+                      <li key={f} className="flex items-center gap-2.5 text-sm text-muted-foreground" style={{ transitionDelay: `${fi * 30}ms` }}>
+                        <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-5 pt-4 border-t border-border">
+                    {user ? (
+                      <Link
+                        to={r.role === 'Student' ? '/student/dashboard' : '/teacher/dashboard'}
+                        className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200"
+                      >
+                        Go to Dashboard <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    ) : (
+                      <Link
+                        to={`/register?role=${r.role.toLowerCase()}`}
+                        className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200"
+                      >
+                        Get started <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    )}
                   </div>
                 </div>
-                <ul className="space-y-2.5">
-                  {r.features.map((f, fi) => (
-                    <li key={f} className="flex items-center gap-2.5 text-sm text-muted-foreground" style={{ transitionDelay: `${fi * 30}ms` }}>
-                      <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 transition-transform duration-200 group-hover:scale-110" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-5 pt-4 border-t border-border">
-                  {user ? (
-                    <Link
-                      to={r.role === 'Student' ? '/student/dashboard' : '/teacher/dashboard'}
-                      className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200"
-                    >
-                      Go to Dashboard <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  ) : (
-                    <Link
-                      to={`/register?role=${r.role.toLowerCase()}`}
-                      className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200"
-                    >
-                      Get started <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  )}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="py-16 bg-muted/30 border-t border-b border-border">
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">

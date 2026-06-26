@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Download, Star, Bookmark, Heart, Flag, ArrowLeft, FileText, User, Calendar, Tag, Share2 } from 'lucide-react';
+import {
+  Download, Star, Bookmark, Heart, Flag, ArrowLeft, FileText, User,
+  Calendar, Tag, Share2, Eye, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, X
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
@@ -101,6 +104,12 @@ export default function NoteDetails() {
             <Button onClick={handleDownload} className="group">
               <Download className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:-translate-y-0.5" />
               Download
+            </Button>
+            <Button variant="secondary" asChild className="group">
+              <Link to={`/note-preview?id=${note.id}`} target="_blank" rel="noopener noreferrer">
+                <Eye className="w-4 h-4 mr-2" />
+                Preview Note
+              </Link>
             </Button>
             <Button
               variant="outline"
@@ -238,9 +247,11 @@ export default function NoteDetails() {
                 </div>
               ))}
             </dl>
-          </div>
-        </div>
       </div>
+      </div>
+      </div>
+
+
     </div>
   );
 }

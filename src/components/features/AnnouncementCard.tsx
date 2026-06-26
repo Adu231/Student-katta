@@ -1,6 +1,14 @@
-import { Pin, Calendar, Tag, Bell, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { Pin, Calendar, Tag, Bell, AlertTriangle, Clock } from 'lucide-react';
 import type { Announcement } from '@/types';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface Props {
   announcement: Announcement;
@@ -19,75 +27,112 @@ const typeConfig: Record<string, { label: string; badgeClass: string; dot: strin
 };
 
 export default function AnnouncementCard({ announcement, compact = false, index = 0 }: Props) {
+  const [open, setOpen] = useState(false);
   const config = typeConfig[announcement.type] || typeConfig.general;
-  const TypeIcon = config.icon;
   const isEmergency = announcement.type === 'emergency';
 
   return (
-    <div
-      className={cn(
-        'sk-card group hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden',
-        announcement.pinned && 'border-l-4 border-l-primary',
-        isEmergency && 'border-l-4 border-l-destructive border-t-destructive/20',
-      )}
-      style={{ animationDelay: `${index * 80}ms` }}
-    >
-      {/* Emergency pulse background */}
-      {isEmergency && (
-        <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 rounded-xl pointer-events-none" />
-      )}
+    <>
+      <div
+        onClick={() => setOpen(true)}
+        className={cn(
+          'sk-card group hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden cursor-pointer',
+          announcement.pinned && 'border-l-4 border-l-primary',
+          isEmergency && 'border-l-4 border-l-destructive border-t-destructive/20',
+        )}
+        style={{ animationDelay: `${index * 80}ms` }}
+      >
+        {/* Emergency pulse background */}
+        {isEmergency && (
+          <div className="absolute inset-0 bg-red-50/50 dark:bg-red-900/10 rounded-xl pointer-events-none" />
+        )}
 
-      {/* Pinned ribbon */}
-      {announcement.pinned && (
-        <div className="absolute top-0 right-0 w-0 h-0
-          border-l-[32px] border-l-transparent
-          border-t-[32px] border-t-primary/80
-          rounded-tr-xl"
-        />
-      )}
+        {/* Pinned ribbon */}
+        {announcement.pinned && (
+          <div className="absolute top-0 right-0 w-0 h-0
+            border-l-[32px] border-l-transparent
+            border-t-[32px] border-t-primary/80
+            rounded-tr-xl"
+          />
+        )}
 
-      <div className={cn('relative p-4', compact ? 'p-3' : 'p-4')}>
-        {/* Type indicator dot */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className={cn('w-1.5 h-1.5 rounded-full shrink-0 mt-0.5', config.dot, isEmergency && 'animate-pulse')} />
-            <span className={config.badgeClass}>{config.label}</span>
-            {announcement.pinned && (
-              <span className="inline-flex items-center gap-1 text-xs text-primary font-medium">
-                <Pin className="w-3 h-3" /> Pinned
+        <div className={cn('relative p-4', compact ? 'p-3' : 'p-4')}>
+          {/* Type indicator dot */}
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className={cn('w-1.5 h-1.5 rounded-full shrink-0 mt-0.5', config.dot, isEmergency && 'animate-pulse')} />
+              <span className={config.badgeClass}>{config.label}</span>
+              {announcement.pinned && (
+                <span className="inline-flex items-center gap-1 text-xs text-primary font-medium">
+                  <Pin className="w-3 h-3" /> Pinned
+                </span>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">{announcement.publishedAt}</span>
+          </div>
+
+          <h3 className={cn(
+            'font-semibold text-foreground mb-1.5 transition-colors duration-200 group-hover:text-primary',
+            compact ? 'text-sm line-clamp-1' : 'text-base'
+          )}>
+            {announcement.title}
+          </h3>
+
+          <p className={cn(
+            'text-muted-foreground leading-relaxed',
+            compact ? 'text-xs line-clamp-2' : 'text-sm line-clamp-3'
+          )}>
+            {announcement.content}
+          </p>
+
+          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border/60 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Tag className="w-3 h-3" />
+              {announcement.publishedBy}
+            </span>
+            {announcement.expiresAt && (
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                Expires: {announcement.expiresAt}
               </span>
             )}
           </div>
-          <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">{announcement.publishedAt}</span>
-        </div>
-
-        <h3 className={cn(
-          'font-semibold text-foreground mb-1.5 transition-colors duration-200 group-hover:text-primary',
-          compact ? 'text-sm line-clamp-1' : 'text-base'
-        )}>
-          {announcement.title}
-        </h3>
-
-        <p className={cn(
-          'text-muted-foreground leading-relaxed',
-          compact ? 'text-xs line-clamp-2' : 'text-sm line-clamp-3'
-        )}>
-          {announcement.content}
-        </p>
-
-        <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border/60 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Tag className="w-3 h-3" />
-            {announcement.publishedBy}
-          </span>
-          {announcement.expiresAt && (
-            <span className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              Expires: {announcement.expiresAt}
-            </span>
-          )}
         </div>
       </div>
-    </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[550px] p-6 text-foreground gap-4 animate-scale-in">
+          <DialogHeader className="space-y-2 text-left">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className={cn('w-2 h-2 rounded-full shrink-0', config.dot, isEmergency && 'animate-pulse')} />
+              <span className={config.badgeClass}>{config.label}</span>
+              {announcement.pinned && (
+                <span className="inline-flex items-center gap-1 text-xs text-primary font-medium">
+                  <Pin className="w-3.5 h-3.5" /> Pinned
+                </span>
+              )}
+            </div>
+            <DialogTitle className="text-xl font-bold text-foreground leading-snug">
+              {announcement.title}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground mt-1 flex items-center gap-x-3 gap-y-1 flex-wrap font-medium">
+              <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5" />Published by: {announcement.publishedBy}</span>
+              <span>·</span>
+              <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />Date: {announcement.publishedAt}</span>
+              {announcement.expiresAt && (
+                <>
+                  <span>·</span>
+                  <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold"><Clock className="w-3.5 h-3.5" />Expires: {announcement.expiresAt}</span>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap border-t border-border pt-4 max-h-[300px] overflow-y-auto">
+            {announcement.content}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

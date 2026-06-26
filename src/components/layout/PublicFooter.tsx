@@ -1,12 +1,62 @@
 import { Link } from 'react-router-dom';
 import { GraduationCap, Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
-
-const footerLinks = {
-  Platform: [['Home', '/'], ['About', '/about'], ['Contact', '/contact'], ['Privacy Policy', '/privacy'], ['Terms & Conditions', '/terms']],
-  Access: [['Student Login', '/login'], ['Teacher Login', '/login'], ['Admin Login', '/login'], ['Register', '/register']],
-};
+import { getCurrentUser } from '@/lib/auth';
 
 export default function PublicFooter() {
+  const user = getCurrentUser();
+  const isStudent = user && user.role === 'student';
+  const isTeacher = user && user.role === 'teacher';
+  const isAdmin = user && user.role === 'admin';
+
+  const getAccessLinks = () => {
+    if (isStudent) {
+      return [
+        ['Upload Notes', '/student/upload-note'],
+        ['Browse Notes', '/student/notes'],
+        ['My Uploads', '/student/my-uploads'],
+        ['Bookmarks', '/student/bookmarks']
+      ];
+    }
+    if (isTeacher) {
+      return [
+        ['Upload Content', '/teacher/upload-content'],
+        ['Review Queue', '/teacher/review-queue'],
+        ['My Content', '/teacher/my-content'],
+        ['Announcements', '/teacher/announcements']
+      ];
+    }
+    if (isAdmin) {
+      return [
+        ['Manage Users', '/admin/users'],
+        ['Content Approvals', '/admin/content-approvals'],
+        ['Teacher Verifications', '/admin/teacher-verifications'],
+        ['Announcements', '/admin/announcements']
+      ];
+    }
+    return [
+      ['Student Login', '/login'],
+      ['Teacher Login', '/login'],
+      ['Register', '/register']
+    ];
+  };
+
+  const footerLinks = {
+    Platform: [
+      ['Home', '/'],
+      ['About', '/about'],
+      ['Contact', '/contact'],
+      ['Privacy Policy', '/privacy'],
+      ['Terms & Conditions', '/terms']
+    ],
+    Access: getAccessLinks(),
+  };
+
+  const handleLinkClick = (href: string) => {
+    if (window.location.pathname === href) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-card border-t border-border mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -49,6 +99,7 @@ export default function PublicFooter() {
                   <li key={label}>
                     <Link
                       to={href}
+                      onClick={() => handleLinkClick(href)}
                       className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1 group transition-all duration-200"
                     >
                       <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />

@@ -135,7 +135,7 @@ export default function NoteCard({ note, showStatus = false, showActions = false
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border relative">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             {/* Download */}
             <button
@@ -166,22 +166,22 @@ export default function NoteCard({ note, showStatus = false, showActions = false
               <span>{likeCount}</span>
             </button>
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover:opacity-0 transition-opacity duration-200">
             <span>{note.fileType}</span>
             <span>·</span>
             <span>{note.fileSize}</span>
           </div>
+          <Link
+            to={`/student/note-details?id=${note.id}`}
+            className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-primary text-primary-foreground text-xs font-medium px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-auto z-10"
+            onClick={e => e.stopPropagation()}
+          >
+            <Eye className="w-3 h-3" /> View
+          </Link>
         </div>
 
         {/* Hover overlay CTA */}
         <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl" />
-        <Link
-          to={`/student/note-details?id=${note.id}`}
-          className="absolute bottom-3 right-3 flex items-center gap-1 bg-primary text-primary-foreground text-xs font-medium px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300 pointer-events-auto z-10"
-          onClick={e => e.stopPropagation()}
-        >
-          <Eye className="w-3 h-3" /> View
-        </Link>
       </div>
     </div>
   );
