@@ -18,12 +18,12 @@ const approvedNotes = MOCK_NOTES.filter(n => n.status === 'approved').slice(0, 4
 const recentAnnouncements = MOCK_ANNOUNCEMENTS.slice(0, 3);
 
 const features = [
-  { icon: Upload,       title: 'Easy Content Upload',        desc: 'Upload notes, assignments, question papers & study materials with ease.',                              color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' },
-  { icon: CheckCircle,  title: 'Quality Approval Workflow',  desc: 'All content reviewed and approved by teachers or admins before publishing.',                          color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20' },
-  { icon: Search,       title: 'Advanced Search & Filter',   desc: 'Find resources by subject, department, semester, type and more.',                                     color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20' },
-  { icon: Bell,         title: 'Announcement Center',        desc: 'Stay updated with exam schedules, events, placements and notices.',                                   color: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20' },
-  { icon: BookOpen,     title: 'Centralized Repository',     desc: 'All academic resources organized by department, subject and semester.',                               color: 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20' },
-  { icon: Shield,       title: 'Role-Based Access',          desc: 'Students, teachers and admins each have dedicated access controls.',                                  color: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20' },
+  { slug: 'content-upload',         icon: Upload,       title: 'Easy Content Upload',        desc: 'Upload notes, assignments, question papers & study materials with ease.',                              color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' },
+  { slug: 'approval-workflow',       icon: CheckCircle,  title: 'Quality Approval Workflow',  desc: 'All content reviewed and approved by teachers or admins before publishing.',                          color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20' },
+  { slug: 'search-filter',          icon: Search,       title: 'Advanced Search & Filter',   desc: 'Find resources by subject, department, semester, type and more.',                                     color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20' },
+  { slug: 'announcement-center',    icon: Bell,         title: 'Announcement Center',        desc: 'Stay updated with exam schedules, events, placements and notices.',                                   color: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20' },
+  { slug: 'centralized-repository', icon: BookOpen,     title: 'Centralized Repository',     desc: 'All academic resources organized by department, subject and semester.',                               color: 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20' },
+  { slug: 'role-access',            icon: Shield,       title: 'Role-Based Access',          desc: 'Students, teachers and admins each have dedicated access controls.',                                  color: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20' },
 ];
 
 const categories = [
@@ -216,7 +216,7 @@ export default function Index() {
             {features.map((f, i) => (
               <Link
                 key={f.title}
-                to="/about"
+                to={`/features/${f.slug}`}
                 className="sk-card sk-card-shine p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group animate-fade-in-up block"
                 style={{ animationDelay: `${i * 80}ms` }}
               >

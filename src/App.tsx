@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import FeatureDetail from "./pages/FeatureDetail";
 
 // Layouts
 import StudentLayout from "./components/layout/StudentLayout";
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/features/:slug" element={<FeatureDetail />} />
 
           {/* Student Routes */}
           <Route path="/student" element={<StudentLayout />}>
