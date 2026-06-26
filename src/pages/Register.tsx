@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { GraduationCap, Eye, EyeOff, ArrowRight, CheckCircle, GraduationCap as GradCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,14 @@ export default function Register() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const roleParam = searchParams.get('role');
+    if (roleParam === 'student' || roleParam === 'teacher') {
+      setForm(prev => ({ ...prev, role: roleParam as UserRole }));
+    }
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));

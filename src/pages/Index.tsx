@@ -12,6 +12,7 @@ import NoteCard from '@/components/features/NoteCard';
 import AnnouncementCard from '@/components/features/AnnouncementCard';
 import { MOCK_NOTES, MOCK_ANNOUNCEMENTS, PLATFORM_STATS } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
+import { getCurrentUser, getDashboardPath } from '@/lib/auth';
 
 const approvedNotes = MOCK_NOTES.filter(n => n.status === 'approved').slice(0, 4);
 const recentAnnouncements = MOCK_ANNOUNCEMENTS.slice(0, 3);
@@ -77,6 +78,7 @@ function CountUp({ target, suffix = '' }: { target: number; suffix?: string }) {
 
 export default function Index() {
   const [heroVisible, setHeroVisible] = useState(false);
+  const user = getCurrentUser();
 
   useEffect(() => {
     const t = setTimeout(() => setHeroVisible(true), 50);
@@ -128,15 +130,33 @@ export default function Index() {
               'flex flex-wrap gap-3 transition-all duration-700 delay-300',
               heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             )}>
-              <Button size="lg" className="bg-white text-primary hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group" asChild>
-                <Link to="/register">
-                  Get Started Free
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
-                <Link to="/login">Sign In</Link>
-              </Button>
+              {user ? (
+                <>
+                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group" asChild>
+                    <Link to={getDashboardPath(user.role)}>
+                      Go to Dashboard
+                      <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                  {user.role === 'student' && (
+                    <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
+                      <Link to="/student/notes">Browse Notes</Link>
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 group" asChild>
+                    <Link to="/register">
+                      Get Started Free
+                      <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
+                    <Link to="/login">Sign In</Link>
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Social proof */}
@@ -194,9 +214,10 @@ export default function Index() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
             {features.map((f, i) => (
-              <div
+              <Link
                 key={f.title}
-                className="sk-card sk-card-shine p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group animate-fade-in-up"
+                to="/about"
+                className="sk-card sk-card-shine p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group animate-fade-in-up block"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
                 <div className={`w-12 h-12 rounded-xl ${f.color} flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3`}>
@@ -207,7 +228,7 @@ export default function Index() {
                 <div className="mt-4 flex items-center gap-1 text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   Learn more <ChevronRight className="w-3 h-3" />
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -221,20 +242,41 @@ export default function Index() {
             <p className="text-muted-foreground">Organized academic resources across all content types.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 stagger-children">
-            {categories.map((c, i) => (
-              <Link
-                key={c.label}
-                to="/login"
-                className="sk-card p-5 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-2 group animate-fade-in-up"
-                style={{ animationDelay: `${i * 70}ms` }}
-              >
-                <div className={`w-12 h-12 ${c.color} rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-lg`}>
-                  <c.icon className="w-6 h-6 text-white" />
-                </div>
-                <p className="font-semibold text-sm text-foreground mb-1 group-hover:text-primary transition-colors duration-200">{c.label}</p>
-                <p className="text-xs text-muted-foreground">{c.count}+ files</p>
-              </Link>
-            ))}
+            {categories.map((c, i) => {
+              const typeMap: Record<string, string> = {
+                'Lecture Notes': 'notes',
+                'Assignments': 'assignment',
+                'Question Papers': 'question-paper',
+                'Syllabus': 'syllabus',
+                'Practical Manuals': 'practical',
+                'Study Materials': 'study-material'
+              };
+              const categoryType = typeMap[c.label] || 'All';
+              let targetUrl = '/login';
+              if (user) {
+                if (user.role === 'student') {
+                  targetUrl = `/student/notes?type=${categoryType}`;
+                } else {
+                  targetUrl = getDashboardPath(user.role);
+                }
+              } else {
+                targetUrl = `/login?type=${categoryType}`;
+              }
+              return (
+                <Link
+                  key={c.label}
+                  to={targetUrl}
+                  className="sk-card p-5 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-2 group animate-fade-in-up"
+                  style={{ animationDelay: `${i * 70}ms` }}
+                >
+                  <div className={`w-12 h-12 ${c.color} rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-lg`}>
+                    <c.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <p className="font-semibold text-sm text-foreground mb-1 group-hover:text-primary transition-colors duration-200">{c.label}</p>
+                  <p className="text-xs text-muted-foreground">{c.count}+ files</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -274,7 +316,10 @@ export default function Index() {
               <p className="text-muted-foreground mt-1">Recently approved academic resources</p>
             </div>
             <Button variant="outline" asChild className="group">
-              <Link to="/login" className="flex items-center gap-2">
+              <Link
+                to={user ? (user.role === 'student' ? '/student/notes' : getDashboardPath(user.role)) : '/login?redirect=%2Fstudent%2Fnotes'}
+                className="flex items-center gap-2"
+              >
                 View All <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </Button>
@@ -296,7 +341,10 @@ export default function Index() {
               <p className="text-muted-foreground mt-1">Stay updated with institutional notices</p>
             </div>
             <Button variant="outline" asChild className="group">
-              <Link to="/login" className="flex items-center gap-2">
+              <Link
+                to={user ? getDashboardPath(user.role) : '/login?redirect=%2Fstudent%2Fdashboard'}
+                className="flex items-center gap-2"
+              >
                 View All <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </Button>
@@ -337,9 +385,15 @@ export default function Index() {
                   ))}
                 </ul>
                 <div className="mt-5 pt-4 border-t border-border">
-                  <Link to="/register" className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200">
-                    Get started <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  {r.role === 'Admin' ? (
+                    <Link to="/contact" className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200">
+                      Contact for Access <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  ) : (
+                    <Link to={`/register?role=${r.role.toLowerCase()}`} className="text-sm font-medium text-primary flex items-center gap-1 hover:gap-2 transition-all duration-200">
+                      Get started <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}
@@ -356,9 +410,15 @@ export default function Index() {
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">Ready to Start Learning?</h2>
           <p className="text-blue-100 text-lg mb-8">Join thousands of students and teachers already using StudentKatta.</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-white text-primary hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" asChild>
-              <Link to="/register">Create Free Account</Link>
-            </Button>
+            {user ? (
+              <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" asChild>
+                <Link to={getDashboardPath(user.role)}>Go to Dashboard</Link>
+              </Button>
+            ) : (
+              <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200" asChild>
+                <Link to="/register">Create Free Account</Link>
+              </Button>
+            )}
             <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
               <Link to="/about">Learn More</Link>
             </Button>

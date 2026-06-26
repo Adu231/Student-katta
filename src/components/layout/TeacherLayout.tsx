@@ -11,9 +11,13 @@ export default function TeacherLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    if (!user) { navigate('/login'); return; }
+    if (!user) {
+      const redirectUrl = encodeURIComponent(location.pathname + location.search);
+      navigate(`/login?redirect=${redirectUrl}`);
+      return;
+    }
     if (user.role !== 'teacher') { navigate('/login'); }
-  }, [user, navigate]);
+  }, [user, navigate, location]);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 

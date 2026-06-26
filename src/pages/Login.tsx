@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { GraduationCap, Eye, EyeOff, ArrowRight, CheckCircle, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ export default function Login() {
   const [loading, setLoading]   = useState(false);
   const [activeDemo, setActiveDemo] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { theme, toggleTheme }  = useTheme();
 
   const handleDemoClick = (demo: typeof demoLogins[0]) => {
@@ -40,7 +41,15 @@ export default function Login() {
       const result = login(email, password);
       if (result.success && result.user) {
         toast.success(`Welcome back, ${result.user.name}!`);
-        navigate(getDashboardPath(result.user.role));
+        const redirect = searchParams.get('redirect');
+        const type = searchParams.get('type');
+        if (redirect) {
+          navigate(decodeURIComponent(redirect));
+        } else if (result.user.role === 'student' && type) {
+          navigate(`/student/notes?type=${type}`);
+        } else {
+          navigate(getDashboardPath(result.user.role));
+        }
       } else {
         toast.error(result.error || 'Login failed. Please check your credentials.');
       }
@@ -57,12 +66,12 @@ export default function Login() {
         <div className="absolute bottom-12 right-8 w-80 h-80 bg-blue-300/10 rounded-full blur-3xl animate-hero-blob" style={{ animationDelay: '-4s' }} />
 
         <div className="text-white max-w-md relative z-10 animate-fade-in-left">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20">
+          <Link to="/" className="flex items-center gap-3 mb-10 group">
+            <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
               <GraduationCap className="w-7 h-7" />
             </div>
-            <span className="text-2xl font-bold" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>StudentKatta</span>
-          </div>
+            <span className="text-2xl font-bold transition-colors duration-200 group-hover:text-yellow-300" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>StudentKatta</span>
+          </Link>
 
           <h2 className="text-4xl font-bold mb-4 leading-tight">
             Your Academic Hub<br />

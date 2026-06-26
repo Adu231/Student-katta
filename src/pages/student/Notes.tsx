@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, X, SlidersHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,10 +23,30 @@ const typeColors: Record<string, string> = {
 
 export default function StudentNotes() {
   const [search, setSearch]           = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedType, setSelectedType] = useState('All');
   const [selectedDept, setSelectedDept] = useState('All');
   const [selectedSem, setSelectedSem]   = useState('All');
   const [showFilters, setShowFilters]   = useState(false);
+
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    if (typeParam) {
+      setSelectedType(typeParam);
+    } else {
+      setSelectedType('All');
+    }
+  }, [searchParams]);
+
+  const handleTypeChange = (type: string) => {
+    setSelectedType(type);
+    if (type === 'All') {
+      searchParams.delete('type');
+    } else {
+      searchParams.set('type', type);
+    }
+    setSearchParams(searchParams);
+  };
 
   const filtered = approvedNotes.filter(n => {
     const matchSearch = !search ||
@@ -40,7 +61,13 @@ export default function StudentNotes() {
   });
 
   const hasActiveFilters = search || selectedType !== 'All' || selectedDept !== 'All' || selectedSem !== 'All';
-  const clearAll = () => { setSearch(''); setSelectedType('All'); setSelectedDept('All'); setSelectedSem('All'); };
+  const clearAll = () => {
+    setSearch('');
+    setSelectedDept('All');
+    setSelectedSem('All');
+    searchParams.delete('type');
+    setSearchParams(searchParams);
+  };
 
   return (
     <div className="space-y-5 page-enter">
@@ -71,7 +98,7 @@ export default function StudentNotes() {
         {contentTypes.map(t => (
           <button
             key={t}
-            onClick={() => setSelectedType(t)}
+            onClick={() => handleTypeChange(t)}
             className={cn(
               'px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95',
               selectedType === t

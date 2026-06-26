@@ -36,14 +36,14 @@ export default function TeacherSidebar({ open, onClose }: Props) {
         open ? 'translate-x-0' : '-translate-x-full'
       )}>
         <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
               <GraduationCap className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-sidebar-foreground" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+            <span className="font-bold text-sidebar-foreground transition-colors duration-200 group-hover:text-primary" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
               Student<span className="text-primary">Katta</span>
             </span>
-          </div>
+          </Link>
           <button onClick={onClose} className="lg:hidden text-sidebar-foreground/60 hover:text-sidebar-foreground p-1 rounded transition-all duration-200 hover:bg-sidebar-accent">
             <X className="w-5 h-5" />
           </button>

@@ -12,9 +12,13 @@ export default function StudentLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    if (!user) { navigate('/login'); return; }
+    if (!user) {
+      const redirectUrl = encodeURIComponent(location.pathname + location.search);
+      navigate(`/login?redirect=${redirectUrl}`);
+      return;
+    }
     if (user.role !== 'student') { navigate('/login'); }
-  }, [user, navigate]);
+  }, [user, navigate, location]);
 
   // Close sidebar on navigation
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);

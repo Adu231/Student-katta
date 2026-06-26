@@ -56,7 +56,7 @@ export default function PublicNavbar() {
                 className={cn(
                   'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                   location.pathname === l.href
-                    ? 'text-primary bg-primary/8'
+                    ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
                 )}
               >
@@ -124,7 +124,7 @@ export default function PublicNavbar() {
                 'block px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
                 'animate-fade-in-left',
                 location.pathname === l.href
-                  ? 'text-primary bg-primary/8'
+                  ? 'text-primary bg-primary/10'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               )}
               style={{ animationDelay: `${i * 60}ms` }}
